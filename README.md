@@ -130,7 +130,8 @@ Inside the kit you will find:
 Before submitting, run the kit's own checks against your repository:
 
 ```sh
-node cli/makefun.mjs check --repo /path/to/your/repo
+# From inside the unpacked kit (add --kit <kit-dir> if you run it from elsewhere):
+node cli/makefun.mjs check --kit . --repo /path/to/your/repo
 ```
 
 Each check prints `pass`, `fail`, or `skip`, with a fix for every failure. The local run covers what can be checked offline — license, size caps, committed-key scan, and (with your transcripts) the transcript gate. What only the site can verify — the repo is public and yours, created after opening, the commit is pushed — prints as "checked at submission".
@@ -164,7 +165,13 @@ Submission is three parts: the repository URL, the full 40-character commit SHA,
 
 ```sh
 # From inside the unpacked kit:
-node cli/makefun.mjs bundle --repo /path/to/your/repo
+# --out is required; the bundle also needs the sessions that wrote the entry,
+# the usage file, and the opening prompt, and refuses to write while a part
+# is missing (it tells you exactly what to add — see the paragraph below).
+node cli/makefun.mjs bundle --repo /path/to/your/repo \
+  --session <session.jsonl> --muse-usage <usage.jsonl> \
+  --prompt-file <prompt.txt> --prompt-origin typed \
+  --mcp none --out <bundle.tar.gz>
 node cli/makefun.mjs submit --competition <slug> \
   --repo-url https://github.com/<owner>/<repo> \
   --commit <full-sha> \
